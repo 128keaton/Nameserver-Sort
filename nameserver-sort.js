@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('fs');
 const ping = require("ping");
 const {AsyncParser} = require("@json2csv/node");

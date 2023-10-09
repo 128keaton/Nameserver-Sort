@@ -2,11 +2,12 @@
   "name": "nameserver-sort",
   "version": "0.0.1",
   "description": "",
-  "main": "main.js",
+  "main": "nameserver-sort.js",
   "bin": "main.js",
   "scripts": {
-    "run": "node main.js",
-    "run:debug": "node main.js -d"
+    "build": "chmod +x nameserver-sort.js",
+    "run": "node nameserver-sort.js",
+    "run:debug": "node nameserver-sort.js -d"
   },
   "author": "Keaton Burleson",
   "license": "MIT",

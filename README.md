@@ -1,8 +1,10 @@
-# Nameserver-Sort
+# Nameserver Sort
 
 Generates a list of nameservers sorted by their resolve ms
 
 ## Usage
+
+Install dependencies via npm and run the `nameserver-sort.js` file
 
 ### Options
 
@@ -10,33 +12,33 @@ Generates a list of nameservers sorted by their resolve ms
 
 Fetch the entries for Kenya:
 ```shell
-node main.js -c ke
+./nameserver-sort.js -c ke
 ```
 
 #### Write Path
 
 Fetch the entries for the US and save the results in the user's downloads directory
 ```shell
-node main.js -w ~/Downloads
+./nameserver-sort.js -w ~/Downloads
 ```
 
 #### Debug Printing
 
 Enable debug printing on the command line
 ```shell
-node main.js -d
+./nameserver-sort.js -d
 ```
 
 #### Max Servers
 
 Limit the maximum amount of servers to test to 10
 ```shell
-node main.js -m 10
+./nameserver-sort.js -m 10
 ```
 
 #### Filename
 
 Use a custom filename 'test' for the output
 ```shell
-node main.js -f test
+./nameserver-sort.js -f test
 ```
