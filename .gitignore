@@ -1,0 +1,5 @@
+node_modules/
+.idea/
+addresses.txt
+results*.json
+results*.csv

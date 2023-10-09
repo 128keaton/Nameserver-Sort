@@ -1,0 +1,18 @@
+{
+  "name": "nameserver-sort",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.js",
+  "bin": "main.js",
+  "scripts": {
+    "run": "node main.js",
+    "run:debug": "node main.js -d"
+  },
+  "author": "Keaton Burleson",
+  "license": "MIT",
+  "dependencies": {
+    "@json2csv/node": "^7.0.3",
+    "commander": "^11.0.0",
+    "ping": "^0.4.4"
+  }
+}
