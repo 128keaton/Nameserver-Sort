@@ -64,7 +64,7 @@ const writeCSV = async (results, basePath, fileName) => {
     debugPrint('Written to', csvPath);
 }
 
-const main = async (listingCode, maxServers) => {
+const main = async (listingCode, maxServers, minReply, timeout) => {
     const ipV6Regex = /(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/;
     const addresses = await fetchNameservers(listingCode, maxServers)
 
@@ -74,8 +74,8 @@ const main = async (listingCode, maxServers) => {
             debugPrint('Pinging', address);
             const isIpV6 = ipV6Regex.test(address);
             const pingCommand = isIpV6 ?  ping.promise.probe(address) : ping.promise.probe(address, {
-                timeout: 1,
-                min_reply: 10,
+                timeout,
+                min_reply: minReply,
             });
 
             pingCommand.catch(_ => {
@@ -99,10 +99,12 @@ const main = async (listingCode, maxServers) => {
 }
 
 (async () => {
-    program.name('dns-ping-tool')
+    program.name('nameserver-sort')
         .option('-c, --countryCode <countryCode>', 'Country code to fetch DNS entries for', 'US')
         .option('-d, --debug', 'Output debug information')
         .option('-f, --filename <fileName>', 'Filename of outputs')
+        .option('-t, --timeout <timeout>', 'Timeout in seconds', '1')
+        .option('-r, --replies <replies>', 'Min. number of replies', '10')
         .option('-m, --max <num>', 'Max number of nameservers to test', '200')
         .option('-w, --write <filePath>', 'Write to file at', './')
 
@@ -122,6 +124,12 @@ const main = async (listingCode, maxServers) => {
     const maxServers = parseInt((program.opts().max || 200));
     debugPrint('Using max servers', maxServers);
 
+    const timeout = parseInt((program.opts().timeout) || 1);
+    debugPrint('Using timeout', timeout);
+
+    const replies = parseInt((program.opts().replies) || 10);
+    debugPrint('Using replies', replies)
+
     const fileName = (program.opts().filename || `results-${listingCode}`)
         .replace('.json', '')
         .replace('.csv', '');
@@ -131,13 +139,14 @@ const main = async (listingCode, maxServers) => {
     try {
         debugPrint('Using debug printing');
 
-        const results = await main(listingCode, maxServers);
+        const results = await main(listingCode, maxServers, replies, timeout);
 
         await writeJSON(results, basePath, fileName)
         await writeCSV(results, basePath, fileName);
 
         printFastest(results);
     } catch (e) {
+        console.error(e);
     }
 })();
 

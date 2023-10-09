@@ -42,3 +42,17 @@ Use a custom filename 'test' for the output
 ```shell
 ./nameserver-sort.js -f test
 ```
+
+#### Min. Replies
+
+Use a custom amount of minimum replies, i.e. 25
+```shell
+./nameserver-sort.js -r 10
+```
+
+#### Timeout
+
+Use a custom timeout, i.e. 10 seconds 
+```shell
+./nameserver-sort.js -t 10
+```
