@@ -3,3 +3,4 @@ node_modules/
 addresses.txt
 results*.json
 results*.csv
+named.conf.options

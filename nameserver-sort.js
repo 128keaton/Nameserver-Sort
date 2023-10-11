@@ -6,6 +6,16 @@ const {AsyncParser} = require("@json2csv/node");
 const { program } = require('commander');
 const path = require("path");
 
+const bindConfigTemplate = `options {
+        directory "/var/cache/bind";
+        forwarders {
+        ADDRESSES
+        };
+        dnssec-validation auto;
+        listen-on-v6 { any; };
+};
+`
+
 let useDebugPrint = false;
 
 const debugPrint = (...args) => {
@@ -62,6 +72,17 @@ const writeCSV = async (results, basePath, fileName) => {
 
     fs.writeFileSync(csvPath, csv);
     debugPrint('Written to', csvPath);
+}
+
+const writeBindConfig = async (results, basePath) => {
+    const addresses = results.slice(0, 4).map(result => {
+        return `    ${result.address};`
+    }).join('\n     ');
+
+    const configPath = path.join(basePath, `named.conf.options`);
+    const fileContents = `${bindConfigTemplate}`.replace('ADDRESSES', addresses);
+    fs.writeFileSync(configPath, fileContents);
+    debugPrint('Written to', configPath);
 }
 
 const main = async (listingCode, maxServers, minReply, timeout) => {
@@ -141,8 +162,13 @@ const main = async (listingCode, maxServers, minReply, timeout) => {
 
         const results = await main(listingCode, maxServers, replies, timeout);
 
-        await writeJSON(results, basePath, fileName)
-        await writeCSV(results, basePath, fileName);
+        if (!!results && results.length > 0) {
+            await writeJSON(results, basePath, fileName)
+            await writeCSV(results, basePath, fileName);
+            await writeBindConfig(results, basePath);
+        } else {
+            console.error('No results');
+        }
 
         printFastest(results);
     } catch (e) {
